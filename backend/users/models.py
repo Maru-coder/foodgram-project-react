@@ -16,3 +16,24 @@ class User(AbstractUser):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+
+    class Meta:
+        ordering = ['id']
+
+
+class Subscribe(models.Model):
+    user = models.ForeignKey(
+        User,
+        related_name='subscriber',
+        verbose_name="Подписчик",
+        on_delete=models.CASCADE,
+    )
+    author = models.ForeignKey(
+        User,
+        related_name='subscribing',
+        verbose_name="Автор",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        ordering = ['-id']
