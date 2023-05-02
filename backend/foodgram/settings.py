@@ -96,17 +96,26 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ],
-#     'DEFAULT_FILTER_BACKENDS': [
-#         'django_filters.rest_framework.DjangoFilterBackend',
-#         'rest_framework.filters.SearchFilter',
-#     ],
-#     'DEFAULT_PAGINATION_CLASS': 'api.pagination.LimitPageNumberPagination',
-#     'PAGE_SIZE': 6,
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
+
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+    },
+
+    'PERMISSIONS': {
+        'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
+        'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
+    },
+    'HIDE_USERS': False,
+}

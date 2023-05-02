@@ -119,13 +119,16 @@ class RecipeReadSerializer(ModelSerializer):
         )
 
     def get_ingredients(self, obj):
-        recipe = obj
-        ingredients = recipe.ingredients.values(
-            'id',
-            'name',
-            'measurement_unit',
-            amount=F('recipeingredient__amount')
-        )
+        recipe_ingredients = RecipeIngredient.objects.filter(recipe=obj)
+        ingredients = []
+        for recipe_ingredient in recipe_ingredients:
+            ingredient = {
+                'id': recipe_ingredient.ingredient.id,
+                'name': recipe_ingredient.ingredient.name,
+                'measurement_unit': recipe_ingredient.ingredient.measurement_unit,
+                'amount': recipe_ingredient.amount
+            }
+            ingredients.append(ingredient)
         return ingredients
 
     def get_is_favorited(self, obj):
