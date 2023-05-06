@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator
 from django.db import models
 
 User = get_user_model()
@@ -31,7 +32,7 @@ class Recipe(models.Model):
         blank=True,
         null=True)
     text = models.TextField('Описание рецепта')
-    cooking_time = models.IntegerField('Время приготовления рецепта')
+    cooking_time = models.IntegerField('Время приготовления рецепта', validators=[MinValueValidator(1, message='Время приготовления должно быть больше 0!')])
     ingredients = models.ManyToManyField(Ingredient, through='RecipeIngredient', through_fields=('recipe', 'ingredient'), related_name='recipes')
     tags = models.ManyToManyField(Tag, verbose_name='Тэги', related_name='recipes')
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)

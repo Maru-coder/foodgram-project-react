@@ -21,6 +21,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         fields = tuple(User.REQUIRED_FIELDS) + (
             User.USERNAME_FIELD,
             'password',
+            'id',
         )
 
 
@@ -53,7 +54,7 @@ class SubscribeSerializer(CustomUserSerializer):
         fields = CustomUserSerializer.Meta.fields + (
             'recipes_count', 'recipes'
         )
-        read_only_fields = ('email', 'username')
+        read_only_fields = ('email', 'username', 'first_name', 'last_name')
 
     def validate(self, data):
         author = self.instance
