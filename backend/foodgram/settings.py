@@ -1,11 +1,15 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='django-insecure-+gk805*of3^yqy!6hq%oo-!=e1$&z-)5sa+js_53h5u_14z_j*')
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    default='django-insecure-+gk805*of3^yqy!6hq%oo-!=e1$&z-)5sa+js_53h5u_14z_j*',
+)
 
 DEBUG = True
 
@@ -108,7 +112,6 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
@@ -120,7 +123,6 @@ DJOSER = {
         'user': 'api.serializers.CustomUserSerializer',
         'current_user': 'api.serializers.CustomUserSerializer',
     },
-
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],

@@ -13,12 +13,20 @@ class BaseAdmin(admin.ModelAdmin):
 @admin.register(User)
 class UserAdmin(BaseAdmin):
     list_display = (
-        'id', 'username', 'email',
-        'first_name', 'last_name', 'date_joined',)
+        'id',
+        'username',
+        'email',
+        'first_name',
+        'last_name',
+        'date_joined',
+    )
     search_fields = ('email', 'username', 'first_name', 'last_name')
     list_filter = ('date_joined', 'email', 'first_name')
 
 
 @admin.register(Subscribe)
 class SubscribeAdmin(BaseAdmin):
-    list_display = ('user', 'author',)
+    list_display = (
+        'user',
+        'author',
+    )
