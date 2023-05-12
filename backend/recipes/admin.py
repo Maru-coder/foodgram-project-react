@@ -9,6 +9,11 @@ class BaseAdmin(admin.ModelAdmin):
     empty_value_display = '-пусто-'
 
 
+class RecipeIngredientInline(admin.StackedInline):
+    model = RecipeIngredient
+    min_num = 1
+
+
 @admin.register(Recipe)
 class RecipeAdmin(BaseAdmin):
     list_display = ('name', 'id', 'author', 'added_in_favorites')
@@ -18,6 +23,7 @@ class RecipeAdmin(BaseAdmin):
         'name',
         'tags',
     )
+    inlines = (RecipeIngredientInline,)
 
     @display(description='Количество в избранных')
     def added_in_favorites(self, obj):

@@ -44,7 +44,7 @@ class CustomUserViewSet(UserViewSet):
 
         if request.method == 'POST':
             serializer = SubscribeSerializer(
-                author, data=request.data, context={"request": request}
+                author, data=request.data, context={'request': request}
             )
             serializer.is_valid(raise_exception=True)
             Subscribe.objects.create(user=user, author=author)
@@ -60,7 +60,7 @@ class CustomUserViewSet(UserViewSet):
     @action(detail=False, permission_classes=[IsAuthenticated])
     def subscriptions(self, request):
         user = request.user
-        queryset = User.objects.filter(subscribing__user=user)
+        queryset = user.subscriber.all().select_related('author')
         pages = self.paginate_queryset(queryset)
         serializer = SubscribeSerializer(
             pages, many=True, context={'request': request}

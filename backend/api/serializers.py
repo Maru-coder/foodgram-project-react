@@ -10,6 +10,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from recipes.utils.consts import MIN_INGREDIENT_AMOUNT, MAX_INGREDIENT_AMOUNT
 from users.models import Subscribe
 
 User = get_user_model()
@@ -43,7 +44,7 @@ class CustomUserSerializer(UserSerializer):
         user = self.context.get('request').user
         if user.is_anonymous:
             return False
-        return Subscribe.objects.filter(user=user, author=obj).exists()
+        return user.subscriber.filter(author=obj).exists()
 
 
 class SubscribeSerializer(CustomUserSerializer):
@@ -181,31 +182,36 @@ class RecipeWriteSerializer(ModelSerializer):
             raise ValidationError(
                 {'ingredients': 'Нужен хотя бы один ингредиент!'}
             )
-        ingredients_list = []
+        ingredients_list = set()
         for item in ingredients:
             ingredient = get_object_or_404(Ingredient, id=item['id'])
             if ingredient in ingredients_list:
                 raise ValidationError(
                     {'ingredients': 'Ингридиенты не могут повторяться!'}
                 )
-            if int(item['amount']) <= 0:
+            if int(item['amount']) < MIN_INGREDIENT_AMOUNT:
                 raise ValidationError(
                     {'amount': 'Количество ингредиента должно быть больше 0!'}
                 )
-            ingredients_list.append(ingredient)
+            if int(item['amount']) > MAX_INGREDIENT_AMOUNT:
+                raise ValidationError(
+                    {
+                        'amount': (
+                            'Количество ингредиента не должно превышать 32000!'
+                        )
+                    }
+                )
+            ingredients_list.add(ingredient)
         return value
 
     def validate_tags(self, value):
         tags = value
         if not tags:
             raise ValidationError({'tags': 'Нужно выбрать хотя бы один тег!'})
-        tags_list = []
-        for tag in tags:
-            if tag in tags_list:
-                raise ValidationError(
-                    {'tags': 'Теги должны быть уникальными!'}
-                )
-            tags_list.append(tag)
+        if len(tags) != len(set(tags)):
+            raise ValidationError(
+                {'tags': 'Теги должны быть уникальными!'}
+            )
         return value
 
     @transaction.atomic
