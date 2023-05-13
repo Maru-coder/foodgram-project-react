@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import IntegerField, SerializerMethodField
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ReadOnlyField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from recipes.utils.consts import MIN_INGREDIENT_AMOUNT, MAX_INGREDIENT_AMOUNT
@@ -98,10 +98,23 @@ class TagSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class RecipeIngredientSerializer(ModelSerializer):
+    id = ReadOnlyField(source='ingredient.id')
+    name = ReadOnlyField(source='ingredient.name')
+    measurement_unit = ReadOnlyField(source='ingredient.measurement_unit')
+
+    class Meta:
+        model = RecipeIngredient
+        fields = ('id', 'name', 'measurement_unit', 'amount')
+
+
 class RecipeReadSerializer(ModelSerializer):
     tags = TagSerializer(many=True, read_only=True)
     author = CustomUserSerializer(read_only=True)
-    ingredients = SerializerMethodField()
+    ingredients = RecipeIngredientSerializer(
+        many=True,
+        required=True,
+        source='ingredient_list')
     image = Base64ImageField()
     is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField(read_only=True)
@@ -120,21 +133,6 @@ class RecipeReadSerializer(ModelSerializer):
             'text',
             'cooking_time',
         )
-
-    def get_ingredients(self, obj):
-        recipe_ingredients = RecipeIngredient.objects.filter(recipe=obj)
-        ingredients = []
-        for recipe_ingredient in recipe_ingredients:
-            ingredient = {
-                'id': recipe_ingredient.ingredient.id,
-                'name': recipe_ingredient.ingredient.name,
-                'measurement_unit': (
-                    recipe_ingredient.ingredient.measurement_unit
-                ),
-                'amount': recipe_ingredient.amount,
-            }
-            ingredients.append(ingredient)
-        return ingredients
 
     def get_is_favorited(self, obj):
         user = self.context.get('request').user
