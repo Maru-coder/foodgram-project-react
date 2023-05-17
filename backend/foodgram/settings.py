@@ -11,7 +11,7 @@ SECRET_KEY = os.getenv(
     default='django-insecure-+gk805*of3^yqy!6hq%oo-!=e1$&z-)5sa+js_53h5u_14z_j*',
 )
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -27,7 +27,6 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'recipes.apps.RecipesConfig',
     'api.apps.ApiConfig',
-    'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
@@ -36,7 +35,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -45,12 +43,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'foodgram.urls'
-
-CORS_URLS_REGEX = r'^/api/.*$'
-
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-]
 
 TEMPLATES = [
     {
@@ -72,8 +64,15 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
+        'NAME': os.getenv('DB_NAME', default='postgres',),
+        'USER': os.getenv('POSTGRES_USER', default='postgres',),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres',),
+        'HOST': os.getenv('DB_HOST', default='db',),
+        'PORT': os.getenv('DB_PORT', default='5432',)
+    },
+    'OPTIONS': {
+        'charset': 'utf8mb4',
     }
 }
 
