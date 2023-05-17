@@ -10,7 +10,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.serializers import ModelSerializer, ReadOnlyField
 
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
-from recipes.utils.consts import MIN_INGREDIENT_AMOUNT, MAX_INGREDIENT_AMOUNT
+from recipes.utils.consts import MAX_INGREDIENT_AMOUNT, MIN_INGREDIENT_AMOUNT
 from users.models import Subscribe
 
 User = get_user_model()
